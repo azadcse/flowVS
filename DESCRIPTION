@@ -1,0 +1,17 @@
+Package: flowVS
+Type: Package
+Title: Variance stabilization in flow cytometry (and microarrays)
+Version: 0.99.9
+Date: 2015-04-07
+Author: Ariful Azad
+Maintainer: Ariful Azad <azadcse@gmail.com>
+Description: Per-channel variance stabilization from a collection of
+        flow cytometry samples by Bertlett test for homogeneity of
+        variances. The approach is applicable to microarrays data as
+        well.
+License: Artistic-2.0
+LazyLoad: yes
+VignetteBuilder: knitr
+Depends: R (>= 3.2), methods, flowCore, flowViz, flowStats
+Suggests: knitr, vsn,
+biocViews: FlowCytometry, CellBasedAssays, Microarray

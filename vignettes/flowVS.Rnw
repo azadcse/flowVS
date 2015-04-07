@@ -1,0 +1,205 @@
+%\VignetteEngine{knitr::knitr}
+%\VignetteIndexEntry{flowVS: Cell population matching and meta-clustering in Flow Cytometry}
+%\VignetteDepends{flowVS}
+%\VignetteKeywords{Variance Stabilization, transformation}
+%\VignettePackage{flowVS}
+
+\documentclass{article}
+\usepackage[left=1in,top=1in,right=1in,bottom=1in]{geometry}
+\usepackage{cite, hyperref, booktabs, graphicx}
+\newcommand{\Rpackage}[1]{{\texttt{#1}}}
+
+\title{flowVS: Variance stabilization in flow cytometry (and microarrays)}
+\author{Ariful Azad, Bartek Rajwa, Alex Pothen}
+
+\begin{document}
+%\SweaveOpts{concordance=TRUE}
+
+<<setup, echo=FALSE, results='hide'>>=
+library("knitr")
+#opts_chunk$set(fig.align="center", fig.width=7, fig.height=7)
+#options(width=90)
+@
+
+
+%\setkeys{Gin}{width=1.0\textwidth, height=1.1\textwidth}
+
+\maketitle
+\begin{center}
+{Email: \tt azad@lbl.gov}
+\end{center}
+
+\textnormal{\normalfont}
+
+\tableofcontents
+\newpage
+
+
+\section{Licensing}
+
+Under the Artistic License, you are free to use and redistribute this software for academic and personal use. 
+%\begin{itemize}
+%\item[] Insert paper citation.
+%\end{itemize}
+
+\section{Variance stabilization in flow cytometry}
+\subsection{Why variance stabilization might be needed}
+Scientists often compare cell populations (clusters of cells with similar marker expressions) to detect changes in populations across biological conditions.
+The between-population changes might help us to diagnose diseases, develop new drugs and understand the immune system in general.
+Comparing cell populations in conventional statistical framework (e.g., t-test, F-test, etc.) often requires variance homogeneity of the cell populations. 
+Furthermore, algorithms for constructing meta-clustering and templates such as \Rpackage{flowMatch}~\cite{azad2012matching, azad2013classifying} and \Rpackage{FLAME}~\cite{pyne2009automated} can also use the homogeneity of clusters when creating homogeneous meta-clusters.
+Hence, within-population variance stabilization might be beneficial in between-population comparisons, which could enhance our effort in automating biological discovery based on flow cytometry.    
+
+\subsection{Our approach}
+In this software package \Rpackage{flowVS}, we developed a variance stabilization (VS) method based on maximum likelihood (ML) estimation, which is built on top of a commonly used inverse hyperbolic since (asinh) transformation. 
+The choice of asinh function is motivated by its success as a variance stabilizer for microarray data~\cite{durbin2002variance, huber2002variance}.
+\Rpackage{flowVS} stabilizes the within-population variances separately for each fluorescence channel $z$ across a collection of $N$ samples.
+After transforming $z$ by asinh($z/c$),  where $c$ is a normalization \emph{cofactor}, \Rpackage{flowVS} identifies one-dimensional clusters (density peaks) in the transformed channel. 
+Assume that a total of $m$ 1-D clusters are identified from $N$ samples with the $i$-th cluster having variance $\sigma^2_i$.
+Then the asinh($z/c$) transformation works as a variance stabilizer if the variances of the 1-D clusters are approximately equal, i.e., $\sigma^2_1 \sim \sigma^2_2\sim ... \sim \sigma^2_m$. 
+To evaluate the homogeneity of variance (also known as homoskedasticity), we use  Bartlett's likelihood-ratio test~\cite{Bartlett1937}.
+From a wide range of cofactors, our algorithm selects one that minimizes Bartlett's test statistics, resulting in a transformation with the best possible VS. 
+Note that, in contrast to other transformation approaches, our algorithm apply the same transformation to corresponding channels in every sample.
+\Rpackage{flowVS} is therefore an explicit VS method that stabilizes within-population variances in each channel by evaluating the homoskedasticity of clusters with a likelihood-ratio test.
+
+The scope and limitations of flowVS are as follows:
+\begin{itemize}
+\item \Rpackage{flowVS} is a method for selecting parameters for transformation so that within-population variances are stabilized. Currently, one dimensional transformation is supported.
+\item \Rpackage{flowVS} stabilizes variance separately on each fluorescence channel. The same channel in all samples will be transformed with the same parameter.
+\item For each channel, \Rpackage{flowVS} stabilizes variance of a collection of flow cytometry samples. Variance can not be efficiently stabilized from a single sample.
+\end{itemize}
+
+
+\subsection{Related work}
+Several packages are available in Bioconductor (http://www.bioconductor.org/) for transforming flow cytometry data.
+The \Rpackage{flowCore} package provides several transformation routines that transform data using logarithm, hyperlog, generalized Box-Cox, and biexponential (e.g., logicle and generalized arcsinh) functions.
+\Rpackage{flowCore} also provides several functions to estimate parameters of the transformations, for example, the \texttt{estimateLogicle} function estimates the parameters for logicle transformation.
+Current software packages estimate parameters of transformations in a data-driven manner to maximize the likelihood (\Rpackage{flowTrans} by Finak et al.~\cite{finak2010optimizing}), to satisfy the normality (\Rpackage{flowScape} by Ray et al.~\cite{ray2012computational}), and to comply with simulations (\Rpackage{FCSTrans} by Qian et al.~\cite{qian2012fcstrans}).
+\Rpackage{flowTrans} estimates transformation parameters for each sample by maximizing the likelihood of data being generated by a multivariate-normal distribution on the transformed scale.
+\Rpackage{flowScape} optimizes the normalization factor of asinh transformation by the Jarque-Bera test of normality.
+\Rpackage{FCSTrans} selects the parameters of the linear, logarithm, and logicle transformations with an extensive set of simulations. 
+However, normalizing data may not necessarily stabilize its variance, e.g., for a Poisson variable $z$, $\sqrt{z+3/8}$ is an approximate variance-stabilizer, whereas $z^{2/3}$ is a normalizer~\cite{efron1982transformation}.
+Therefore, we consider an approach built upon the well-known asinh transformation and estimate transformation parameters for explicitly stabilizing within-population variations.
+
+\section{Examples}
+\subsection{Healthy Data (HD)}
+In the \Rpackage{flowVS} package, we have included a healthy donor (HD) dataset consisting of 12 samples from three healthy individuals, ``A", ``C", and ``D".
+From each individual, the samples were drawn on two different days and two technical replicates were created from each sample (i.e., $3\times 2 \times 2 = 12$ samples).
+Each HD sample was stained using labeled antibodies against CD45, CD3, CD4, CD8, and CD19 protein markers.
+Here, an HD sample ``C\_4\_2" means that  it is collected on day 4 from individual ``C" and it is the second replicate on that day.
+We have identified lymphocytes in each sample of the HD dataset and apply the subsequent analysis on lymphocytes.
+
+We stabilize within-population variances in each channel of the HD dataset.
+At first, we load the HD dataset from \Rpackage{flowVS} package and estimate the optimum cofactors for CD3 and CD4 channels.
+The optimum parameters are identified by the \texttt{estParamFlowVS} function.
+The function outputs the search intervals and Bartlett's statistics at the local optimum cofactor in each interval.
+The global optimum cofactor is computed from the local optimum cofactors.
+
+
+<<lib, message=FALSE, results='hide', warning=FALSE>>=
+library(flowVS) #load library
+@
+
+<<HD, echo=TRUE, warning=FALSE, fig.keep='high', fig.show='hold', out.width='.49\\linewidth', fig.cap='Transforming two fluorescence channels in the HD data. Bartlett\'s statistics (Y-axis) is computed from density peaks after data is transformed by different cofactors (X-axis). An optimum cofactor is obtained where Bartlett\'s statistics is minimum (indicated by red circles).'>>=
+## Example 1: Healthy data from flowVS package
+data(HD)
+## identify optimum cofactor for CD3 and CD4 channels 
+cofactors = estParamFlowVS(HD[1:5],channels=c('CD3', 'CD4'))
+@ 
+
+
+After computing the optimum cofactors for the requested channels, we use \texttt{transFlowVS} function to actually transform the data by asinh transformation with the cofactors.
+The density plots show that the variance of populations are relatively stabilized after the transformation.
+<<densityHD, echo=TRUE, warning=FALSE, fig.cap='The density plots after the data is transformed by asins transformation with the optimum cofactors.'>>=
+## transform CD3 and CD4 channels in all samples
+HD.VS = transFlowVS(HD, channels=c('CD3', 'CD4'), cofactors)
+## density plot (from flowViz package)
+densityplot(~CD3+CD4, HD.VS, main="Transfromed CD3 and CD4 channels in HD data")
+@ 
+
+
+
+\subsection{Immune Tolerance Data (ITN)}
+We use the Immune Tolerance Network (ITN) dataset from the \Rpackage{flowStats} package in Bioconductor to demonstrate the use of flowVS.
+The ITN dataset is collected from 15 patients. It includes 3 patient groups with 5 samples each. 
+Each sample was stained using labeled antibodies against CD3, CD4, CD8, CD69 and HLADr.
+We identify lymphocytes in each sample of the ITN dataset beforehand by the \texttt{lymphs} function in \Rpackage{flowVS}.
+
+
+<<ITN, echo=TRUE, warning=FALSE, fig.keep='high', fig.show='hold', out.width='.49\\linewidth', fig.cap='Transforming two fluorescence channels in the ITN data. Bartlett\'s statistics (Y-axis) is computed from density peaks after data is transformed by different cofactors (X-axis). An optimum cofactor is obtained where Bartlett\'s statistics is minimum (indicated by red circles).'>>=
+## Example 2: ITN data from flowStats package
+suppressMessages(library(flowStats))
+data(ITN)
+# identify lymphocytes
+ITN.lymphs = fsApply(ITN,lymphs, list("FS"=c(200, 600),"SS"=c(0, 400)), "FSC", "SSC",FALSE)
+## identify optimum cofactor for CD3 and CD4 channels
+cofactors = estParamFlowVS(ITN.lymphs[1:5],channels=c('CD3', 'CD4'))
+@ 
+
+
+After computing the optimum cofactors for the requested channels, we use \texttt{transFlowVS} function to actually transform the data by asinh transformation with the cofactors.
+The density plots show that the variance of populations are relatively stabilized after the transformation.
+<<densityITN, echo=TRUE, warning=FALSE, fig.cap='The density plots after the data is transformed by asins transformation with the optimum cofactors.'>>=
+## transform CD4 channel in all samples
+ITN.VS = transFlowVS(ITN.lymphs, channels=c('CD3', 'CD4'), cofactors)
+## density plot (from flowViz package)
+densityplot(~CD3+CD4, ITN.VS, main="Transfromed CD3 and CD4 channels in ITN data")
+@ 
+
+
+\section{Variance stabilization in microarray data}
+The VS approach based on optimizing Bartlett's statistics can also be used to stabilize variance in microarray data.  
+Assume that the expressions of $m$ genes are measured from $N$ samples in a microarray experiment. 
+After transforming the data by the asinh function, the mean $\mu_i$ and variance $\sigma^2_i$ of the $i$th gene $g_i$ are computed from the expressions of $g_i$ in all samples.  
+We then stabilizes the variances of the genes by transforming data using the asinh function with an optimum choice of cofactor.
+Unlike FC, a single cofactor is selected for all genes in microarrays.
+
+The function \texttt{microVS} performs the variance stabilization in microarray data.
+This function transforms a microarray data matrix \texttt{z} by \texttt{asinh(z/c)} transformation where \texttt{c} is a normalizing cofactor.
+The cofactor is searched in the range \texttt{[cfLow, cfHigh]} and an optimum cofactor is obtained for which the transformed data is variance stabilized.
+The optimum cofactor is obtained by minimizing Bartlett's test statistics for homogeneity of variance.
+
+\subsection{Example}
+We have applied the \texttt{microVS} to the publicly available Kidney microarray data provided by Huber et al.~\cite{huber2002variance}.
+The Kidney data reports the expression of 8704 genes from two neighboring parts of a kidney tumor by using cDNA microarray technology. 
+For different values of the cofactor, flowVS transforms the Kidney data with the asinh function and identifies the optimum cofactor by minimizing Bartlett's statistics.
+The figure below shows that a minimum value of Bartlett's statistics is obtained when the cofactor is set to $\exp(6)$ ($\sim400$). 
+The optimum cofactor is then used with the asinh function to transform the Kidney data.
+
+
+
+<<microVS, echo=TRUE, warning=FALSE, fig.width=5, fig.height=5>>=
+suppressMessages(library(vsn))
+data(kidney)
+kidney.microVS = microVS(exprs(kidney)) #variance stabilization
+@ 
+
+To take a closer look at the transformed data by \texttt{microVS}, we plot the variances of genes against the ranks of their means.
+For this purpose, we included a plotting function \texttt{plotMeanSd} that is modified from the \texttt{meanSdPlot} function in \texttt{vsn} package.
+We compare the performance of \texttt{microVS} and \texttt{vsn} in the figures below by using the  \texttt{plotMeanSd} function.
+Here, the ranks of means distribute the data evenly along the $x$-axis and thus make it easy to visualize the homogeneity of variances.
+We also show the running median estimator of standard deviation by the red lines. 
+Both \texttt{vsn} and \texttt{microVS} remove the mean-variance dependence because the red lines are approximately horizontal for both transformations. 
+Hence, \texttt{flowVS} performs at least as well as a state-of-the-art approach developed for microarray data.
+
+
+<<vsn, echo=TRUE, warning=FALSE, fig.width=4.5, fig.height=4, fig.show='hold', fig.align='center', fig.cap='Variance stabilization of the Kidney microarray data by flowVs and vsn packages.'>>=
+suppressMessages(library(vsn))
+data(kidney)
+kidney.vsn = vsn2(exprs(kidney)) #variance stabilization by vsn
+plotMeanSd(kidney.microVS, main="Kidney data: VS by flowVS")
+plotMeanSd(exprs(kidney.vsn), main="Kidney data: VS by vsn")
+@ 
+
+\newpage
+\section{Sessioninfo}
+Here is the output of sessionInfo on the system on which this document was compiled:
+
+<<sessionInfo, results = 'asis', eval = TRUE, echo = TRUE>>=
+toLatex(sessionInfo())
+@
+
+\bibliographystyle{plain}
+\bibliography{flowVS}
+
+\end{document}
