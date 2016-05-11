@@ -1,7 +1,7 @@
 Package: flowVS
 Type: Package
 Title: Variance stabilization in flow cytometry (and microarrays)
-Version: 1.5.0
+Version: 1.5.1
 Date: 2015-04-07
 Author: Ariful Azad
 Maintainer: Ariful Azad <azadcse@gmail.com>
