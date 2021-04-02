@@ -24,7 +24,7 @@ The \code{estParamFlowVS} function estimates cofactors, one for each channel for
   \code{estParamFlowVS} returns a numeric vector representing the optimum cofactors for the requested channels. The optimum cofactor for the input \code{channels[i]} is stored in the \code{i}th entry of the returned vector.
 }
 \references{
-  Ariful Azad, Bartek Rajwa, and Alex Pothen (2015), "flowVS: Channel-Specific Variance Stabilization in Flow Cytometry", manuscript submitted for publication.
+  Ariful Azad, Bartek Rajwa, and Alex Pothen (2015), "flowVS: Channel-Specific Variance Stabilization in Flow Cytometry", BMC Bioinformatics, vol 17, pp 1-14, 2016.
 }
 \author{Ariful Azad}
 

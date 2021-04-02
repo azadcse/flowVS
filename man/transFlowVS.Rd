@@ -30,8 +30,9 @@ Variance stabilizing cofactors can be estimatd by the \code{\link{estParamFlowVS
  % The \code{i}th column of every flowFrame of the input flowSet \code{fs} is transformed by asinh transformation with \code{cofactors[i]}. 
 }
 \references{
-  Ariful Azad, Bartek Rajwa, and Alex Pothen (2015), "flowVS: Channel-Specific Variance Stabilization in Flow Cytometry", manuscript submitted for publication.
+  Ariful Azad, Bartek Rajwa, and Alex Pothen (2015), "flowVS: Channel-Specific Variance Stabilization in Flow Cytometry", BMC Bioinformatics, vol 17, pp 1-14, 2016.
 }
+
 \author{Ariful Azad}
 
 

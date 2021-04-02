@@ -26,7 +26,7 @@ If the parameter \code{frac} is less then one, a fraction of differentially expr
   \code{microVS} returns a matrix of the variance-stabilizing microarray data.
 }
 \references{
-  Ariful Azad, Bartek Rajwa, and Alex Pothen (2015), "flowVS: Channel-Specific Variance Stabilization in Flow Cytometry", manuscript submitted for publication.
+  Ariful Azad, Bartek Rajwa, and Alex Pothen (2015), "flowVS: Channel-Specific Variance Stabilization in Flow Cytometry", BMC Bioinformatics, vol 17, pp 1-14, 2016.
 }
 \author{Ariful Azad}
 
