@@ -10,7 +10,7 @@
 microVS = function(data, cfLow=0, cfHigh=10, frac=1)
 {
   ## some error checking
-  if(class(data)!= "matrix")
+  if(!is(data, "matrix"))
     stop(" The microarray data must be a Matrix.")
   if(frac>1 || frac <= 0)
     stop(" 0< frac<=1 ")
@@ -88,7 +88,7 @@ bartlettTestMicro = function(dataMatrix)
 plotMeanSd=function(x, ranks=TRUE, xlab = ifelse(ranks, "Rank of means (ascending order)", "mean"),
                      ylab = "Standard deviation", pch  = ".", plot = TRUE, ...) 
   {            
-              if(class(x)!="matrix")
+              if(!is(x, "matrix"))
                 stop("\'x\' must be a mtrix\n")
               stopifnot(is.logical(ranks), length(ranks)==1, !is.na(ranks))
               

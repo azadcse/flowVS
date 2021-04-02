@@ -13,6 +13,7 @@
 \author{Ariful Azad, Bartek Rajwa, Alex Pothen}
 
 \begin{document}
+\SweaveOpts{concordance=TRUE}
 %\SweaveOpts{concordance=TRUE}
 
 <<setup, echo=FALSE, results='hide'>>=
@@ -26,7 +27,7 @@ library("knitr")
 
 \maketitle
 \begin{center}
-{Email: \tt azad@lbl.gov}
+{Email: \tt azad@iu.edu}
 \end{center}
 
 \textnormal{\normalfont}
