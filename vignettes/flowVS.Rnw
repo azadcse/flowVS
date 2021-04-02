@@ -13,7 +13,7 @@
 \author{Ariful Azad, Bartek Rajwa, Alex Pothen}
 
 \begin{document}
-\SweaveOpts{concordance=TRUE}
+%\SweaveOpts{concordance=TRUE}
 %\SweaveOpts{concordance=TRUE}
 
 <<setup, echo=FALSE, results='hide'>>=
@@ -48,11 +48,11 @@ Under the Artistic License, you are free to use and redistribute this software f
 Scientists often compare cell populations (clusters of cells with similar marker expressions) to detect changes in populations across biological conditions.
 The between-population changes might help us to diagnose diseases, develop new drugs and understand the immune system in general.
 Comparing cell populations in conventional statistical framework (e.g., t-test, F-test, etc.) often requires variance homogeneity of the cell populations. 
-Furthermore, algorithms for constructing meta-clustering and templates such as \Rpackage{flowMatch}~\cite{azad2012matching, azad2013classifying} and \Rpackage{FLAME}~\cite{pyne2009automated} can also use the homogeneity of clusters when creating homogeneous meta-clusters.
+Furthermore, algorithms for constructing meta-clustering and templates such as \Rpackage{flowMatch}~\cite{azad2012matching, azad2013classifying, azad2016immunophenotype} and \Rpackage{FLAME}~\cite{pyne2009automated} can also use the homogeneity of clusters when creating homogeneous meta-clusters.
 Hence, within-population variance stabilization might be beneficial in between-population comparisons, which could enhance our effort in automating biological discovery based on flow cytometry.    
 
 \subsection{Our approach}
-In this software package \Rpackage{flowVS}, we developed a variance stabilization (VS) method based on maximum likelihood (ML) estimation, which is built on top of a commonly used inverse hyperbolic since (asinh) transformation. 
+In this software package \Rpackage{flowVS}~\cite{azad2016flowvs}, we developed a variance stabilization (VS) method based on maximum likelihood (ML) estimation, which is built on top of a commonly used inverse hyperbolic since (asinh) transformation. 
 The choice of asinh function is motivated by its success as a variance stabilizer for microarray data~\cite{durbin2002variance, huber2002variance}.
 \Rpackage{flowVS} stabilizes the within-population variances separately for each fluorescence channel $z$ across a collection of $N$ samples.
 After transforming $z$ by asinh($z/c$),  where $c$ is a normalization \emph{cofactor}, \Rpackage{flowVS} identifies one-dimensional clusters (density peaks) in the transformed channel. 
