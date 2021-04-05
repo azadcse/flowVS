@@ -1,10 +1,10 @@
 Package: flowVS
 Type: Package
 Title: Variance stabilization in flow cytometry (and microarrays)
-Version: 1.22.1
-Date: 2015-04-07
+Version: 1.22.2
+Date: 2021-04-02
 Author: Ariful Azad
-Maintainer: Ariful Azad <azadcse@gmail.com>
+Maintainer: Ariful Azad <azad@iu.edu>
 Description: Per-channel variance stabilization from a collection of
         flow cytometry samples by Bertlett test for homogeneity of
         variances. The approach is applicable to microarrays data as
