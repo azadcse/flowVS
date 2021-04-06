@@ -25,7 +25,7 @@ Then the \code{norm2Filter} function is used to identify lymphocytes.
   \code{lymphs} returns a new flowFrame containing the lymphocytes.
 }
 \references{
-  Ariful Azad, Bartek Rajwa, and Alex Pothen (2015), "flowVS: Channel-Specific Variance Stabilization in Flow Cytometry", manuscript submitted for publication.
+  Ariful Azad, Bartek Rajwa, and Alex Pothen (2015), "flowVS: Channel-Specific Variance Stabilization in Flow Cytometry", BMC Bioinformatics, vol 17, pp 1-14, 2016.
 }
 \author{Ariful Azad}
 
